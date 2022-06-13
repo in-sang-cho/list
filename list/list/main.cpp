@@ -1,3 +1,4 @@
+// ** list v0.2
 #include <iostream>
 
 using namespace std;
@@ -10,11 +11,12 @@ struct list
 };
 
 void AddObject(list* _next, const int& _value);
+void Insert(list* _next, int _where, const int& _value);
+void erase(list* _next, int _where);
 
-void Output(list* _next);
+void Output(const list* _next);
+list* front = nullptr;
 
-// ** insert 함수 만들어오기
-// ** 중간에 삽입해야된다면 배열을 사용하거나 for문 도중에 끼워넣듯 해도 괜찮다(erase는 뒤의 방식과 동일하게)
 
 
 int main(void)
@@ -29,6 +31,10 @@ int main(void)
 		AddObject(Numberlist, i * 10 + 10);
 	}
 
+	Insert(Numberlist, 2, 15);
+	Output(Numberlist);
+
+	erase(Numberlist, 2);
 	Output(Numberlist);
 
 	return 0;
@@ -50,9 +56,48 @@ void AddObject(list* _next, const int& _value)
 	}
 }
 
-void Output(list* _next)
+void Insert(list* _next, int _where, const int& _value)
+{
+	if (_where == 0)
+	{
+		list* Temp = new list;
+		Temp->Value = _value;
+		Temp->Back = _next->Back;
+
+		_next->Back = Temp;
+	}
+	else
+	{
+		Insert(_next->Back, _where - 1, _value);
+	}
+}
+
+
+void erase(list* _next, int _where)
+{
+	if (_where == -1)
+	{
+		/*
+		list* Temp = _next->Back;
+		_next->Back = _next->Back->Back;
+		*/
+
+		list* Temp = _next;
+		front->Back = _next->Back;
+
+		delete _next;
+		Temp = nullptr;
+	}
+	else
+	{
+		front = _next;
+		erase(_next->Back, _where - 1);
+	}
+}
+
+void Output(const list* _next)
 {
 	cout << _next->Value << endl;
-	if (_next->Back == nullptr)
+	if (_next->Back != nullptr)
 		Output(_next->Back);
 }
