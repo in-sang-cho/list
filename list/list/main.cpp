@@ -1,27 +1,31 @@
-// ** list v0.2
+// ** list v0.3
 #include <iostream>
 
 using namespace std;
 
 struct list
 {
+	list* Front;
 	int Value;
 	list* Back;
 
 };
 
-void AddObject(list* _next, const int& _value);
-void Insert(list* _next, int _where, const int& _value);
-void erase(list* _next, int _where);
+void AddObject(list* _Current, const int& _value);
+void DelObjectB(list* _Current);
 
-void Output(const list* _next);
-list* front = nullptr;
+void Insert(list* _Current, int _where, const int& _value);
+void erase(list* _Current, int _where);
 
+void Output(const list* _Current);
 
+list* End = nullptr;
 
 int main(void)
 {
 	list* Numberlist = new list;
+
+	Numberlist->Front = nullptr;
 	Numberlist->Value = 0;
 	Numberlist->Back = nullptr;
 
@@ -37,67 +41,86 @@ int main(void)
 	erase(Numberlist, 2);
 	Output(Numberlist);
 
+	DelObjectB(Numberlist);
+	Output(Numberlist);
+
 	return 0;
 }
 
-void AddObject(list* _next, const int& _value)
+void AddObject(list* _Current, const int& _value)
 {
-	if (_next->Back == nullptr)
+	if (_Current->Back == nullptr)
 	{
 		list* Temp = new list;
+
+		Temp->Front = _Current;
 		Temp->Value = _value;
 		Temp->Back = nullptr;
 
-		_next->Back = Temp;
+		_Current->Back = Temp;
 	}
 	else
 	{
-		AddObject(_next->Back, _value);
+		AddObject(_Current->Back, _value);
 	}
 }
 
-void Insert(list* _next, int _where, const int& _value)
+void DelObjectB(list* _Current)
+{
+	if (_Current->Back == nullptr)
+	{
+		End = _Current->Front;
+
+		_Current->Front->Back = nullptr;
+		delete _Current;
+		_Current = nullptr;
+	}
+	else
+	{
+		DelObjectB(_Current->Back);
+	}
+}
+
+void Insert(list* _Current, int _where, const int& _value)
 {
 	if (_where == 0)
 	{
 		list* Temp = new list;
-		Temp->Value = _value;
-		Temp->Back = _next->Back;
 
-		_next->Back = Temp;
+		Temp->Front = _Current;
+		Temp->Value = _value;
+		Temp->Back = _Current->Back;
+
+		_Current->Back = Temp;
 	}
 	else
 	{
-		Insert(_next->Back, _where - 1, _value);
+		Insert(_Current->Back, _where - 1, _value);
 	}
 }
 
 
-void erase(list* _next, int _where)
+void erase(list* _Current, int _where)
 {
 	if (_where == -1)
 	{
-		/*
-		list* Temp = _next->Back;
-		_next->Back = _next->Back->Back;
-		*/
+		list* Temp = _Current;
 
-		list* Temp = _next;
-		front->Back = _next->Back;
+		Temp->Back->Front = _Current->Front;
+		Temp->Front->Back = _Current->Back;
 
-		delete _next;
-		Temp = nullptr;
+		delete _Current;
+		_Current = nullptr;
 	}
 	else
 	{
-		front = _next;
-		erase(_next->Back, _where - 1);
+		erase(_Current->Back, _where - 1);
 	}
 }
 
-void Output(const list* _next)
+void Output(const list* _Current)
 {
-	cout << _next->Value << endl;
-	if (_next->Back != nullptr)
-		Output(_next->Back);
+	cout << _Current->Value << endl;
+	if (_Current->Back != nullptr)
+		Output(_Current->Back);
 }
